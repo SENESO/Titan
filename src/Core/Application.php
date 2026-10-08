@@ -46,21 +46,14 @@ class Application extends Container implements ContainerInterface
     protected array $serviceProviders = [];
 
     /**
-     * The application namespace.
-     *
-     * @var string
-     */
-    protected string $namespace;
-
-    /**
      * Create a new Titan application instance.
      *
      * @param string|null $basePath
      */
     public function __construct(string $basePath = null)
     {
-        parent::__construct();
-
+        // Note: Container (the parent class) defines no constructor,
+        // so there is no parent::__construct() call here.
         if ($basePath) {
             $this->setBasePath($basePath);
         }
@@ -284,7 +277,7 @@ class Application extends Container implements ContainerInterface
     /**
      * Run the application.
      *
-     * @return void
+     * @return Response
      */
     public function run(): Response
     {
@@ -301,9 +294,8 @@ class Application extends Container implements ContainerInterface
         // Route the request and get a response
         $response = $router->dispatch($request);
 
-        // Send the response
-        $response->send();
-
+        // The front controller (public/index.php) is responsible for
+        // sending the response, so we just return it here.
         return $response;
     }
 

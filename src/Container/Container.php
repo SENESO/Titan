@@ -43,6 +43,13 @@ class Container implements ContainerInterface
     protected array $instances = [];
 
     /**
+     * The resolved type map (abstracts that have been built at least once).
+     *
+     * @var array
+     */
+    protected array $resolved = [];
+
+    /**
      * The registered type aliases.
      *
      * @var array
@@ -179,7 +186,8 @@ class Container implements ContainerInterface
             $abstract = $this->getAlias($abstract);
         }
 
-        return isset($this->instances[$abstract]);
+        return isset($this->resolved[$abstract]) ||
+               isset($this->instances[$abstract]);
     }
 
     /**
@@ -308,17 +316,12 @@ class Container implements ContainerInterface
      */
     public function instance(string $abstract, $instance)
     {
-        // First, we'll extract the alias from the abstract if it exists. If we're
-        // registering a concrete instance of something that was bound to an alias,
-        // we will register it to the alias rather than the abstract.
-        $this->aliases[$abstract] = $abstract;
-
-        // We'll check to determine if this type has been bound before, and if it has
-        // we will fire the rebound callbacks registered with the container and it
-        // can be updated with consuming classes that have gotten resolved here.
+        // Check this BEFORE registering: binding an abstract for the first
+        // time must not trigger rebound callbacks. (The old code set a
+        // self-alias here first, which made bound() always return true and
+        // forced a rebound -> make() on abstracts that have no binding,
+        // which is fatal.)
         $isBound = $this->bound($abstract);
-
-        unset($this->aliases[$abstract]);
 
         // Next, we'll set the instance in our instances array so that we can quickly
         // look it up later and share it if needed. This is the fastest way to get
@@ -389,7 +392,9 @@ class Container implements ContainerInterface
      */
     protected function rebound(string $abstract): void
     {
-        $instance = $this->make($abstract);
+        // If the abstract was registered as an instance, that instance IS the
+        // fresh object: there is no binding to re-resolve via make().
+        $instance = $this->instances[$abstract] ?? $this->make($abstract);
 
         foreach ($this->getReboundCallbacks($abstract) as $callback) {
             $callback($this, $instance);
@@ -434,6 +439,16 @@ class Container implements ContainerInterface
     protected function resolve(string $abstract, array $parameters = [], bool $raiseEvents = true)
     {
         $abstract = $this->getAlias($abstract);
+
+        // Mark the abstract as resolved so rebound callbacks fire on later binds
+        // and offsetUnset()/flush() have a real map to work with.
+        $this->resolved[$abstract] = true;
+
+        // If an instance was registered for this abstract, return it directly
+        // instead of trying to build a class named like the abstract.
+        if (isset($this->instances[$abstract]) && empty($parameters)) {
+            return $this->instances[$abstract];
+        }
 
         // First we'll fire any event handlers which handle the "before" resolving of
         // specific types. This gives some hooks the chance to add various extends
@@ -913,6 +928,7 @@ class Container implements ContainerInterface
         $this->aliases = [];
         $this->bindings = [];
         $this->instances = [];
+        $this->resolved = [];
         $this->rebuilders = [];
         $this->reboundCallbacks = [];
         $this->beforeResolvingCallbacks = [];

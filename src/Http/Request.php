@@ -416,7 +416,7 @@ class Request
 
         $scheme = $this->secure() ? 'https' : 'http';
 
-        return $scheme . '://' . $this->server['HTTP_HOST'] . $this->uri() . $query;
+        return $scheme . '://' . ($this->server['HTTP_HOST'] ?? 'localhost') . $this->uri() . $query;
     }
 
     /**
@@ -429,8 +429,8 @@ class Request
         $https = $this->server['HTTPS'] ?? '';
 
         return $https === 'on' || $https === '1' ||
-               $this->server['REQUEST_SCHEME'] === 'https' ||
-               $this->server['HTTP_X_FORWARDED_PROTO'] === 'https';
+               ($this->server['REQUEST_SCHEME'] ?? '') === 'https' ||
+               ($this->server['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
     }
 
     /**

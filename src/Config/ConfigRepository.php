@@ -161,6 +161,7 @@ class ConfigRepository implements ArrayAccess
      * @param mixed $key
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($key): bool
     {
         return $this->has($key);
@@ -172,6 +173,7 @@ class ConfigRepository implements ArrayAccess
      * @param mixed $key
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($key)
     {
         return $this->get($key);
@@ -184,6 +186,7 @@ class ConfigRepository implements ArrayAccess
      * @param mixed $value
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($key, $value): void
     {
         $this->set($key, $value);
@@ -195,6 +198,7 @@ class ConfigRepository implements ArrayAccess
      * @param mixed $key
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($key): void
     {
         $this->set($key, null);

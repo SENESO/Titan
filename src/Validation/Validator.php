@@ -78,13 +78,14 @@ class Validator
     /**
      * Available validation rules.
      *
+     * Only rules with a matching validate* method are listed here.
+     * Anything else throws an InvalidArgumentException instead of
+     * silently passing validation.
+     *
      * @var array
      */
     protected array $availableRules = [
-        'required', 'email', 'min', 'max', 'numeric', 'integer', 'string',
-        'array', 'in', 'unique', 'confirmed', 'alpha', 'alpha_dash',
-        'alpha_num', 'date', 'url', 'boolean', 'same', 'different',
-        'regex'
+        'required', 'email', 'min', 'max', 'numeric', 'integer', 'string', 'in',
     ];
 
     /**
@@ -478,6 +479,9 @@ class Validator
     /**
      * Validate the data and throw an exception if validation fails.
      *
+     * Named validateOrFail (not validate) because PHP does not allow a class
+     * to declare both an instance and a static method with the same name.
+     *
      * @param array $data
      * @param array $rules
      * @param array $messages
@@ -486,7 +490,7 @@ class Validator
      *
      * @throws ValidationException
      */
-    public static function validate(array $data, array $rules, array $messages = [], array $customAttributes = []): array
+    public static function validateOrFail(array $data, array $rules, array $messages = [], array $customAttributes = []): array
     {
         $validator = static::make($data, $rules, $messages, $customAttributes);
 

@@ -14,20 +14,21 @@
         "ext-json": "*",
         "ext-mbstring": "*",
         "psr/container": "^2.0",
-        "psr/http-message": "^1.0",
+        "psr/http-message": "^2.0",
         "psr/log": "^3.0",
         "symfony/console": "^6.3",
         "symfony/var-dumper": "^6.3",
         "vlucas/phpdotenv": "^5.5"
     },
     "require-dev": {
-        "phpunit/phpunit": "^10.0",
-        "phpstan/phpstan": "^1.10",
+        "phpunit/phpunit": "^11.0",
+        "phpstan/phpstan": "^2.0",
         "squizlabs/php_codesniffer": "^3.7"
     },
     "autoload": {
         "psr-4": {
-            "Titan\\": "src/"
+            "Titan\\": "src/",
+            "App\\": "app/"
         },
         "files": [
             "src/Core/helpers.php"

@@ -35,7 +35,7 @@ Titan is a modern PHP framework designed to be more powerful, more secure, and e
 ### Via Composer Create-Project
 
 ```bash
-composer create-project titan/titan your-project-name
+composer create-project titan/framework your-project-name
 ```
 
 ### Manually
@@ -43,7 +43,7 @@ composer create-project titan/titan your-project-name
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/titan/framework.git your-project-name
+git clone https://github.com/SENESO/Titan your-project-name
 ```
 
 2. Install dependencies:
@@ -59,11 +59,13 @@ composer install
 cp .env.example .env
 ```
 
-4. Generate an application key:
+Then edit `.env` to match your environment (database credentials, app URL, etc.).
 
-```bash
-php titan key:generate
-```
+> **Note:** The `titan` console CLI (`key:generate`, `make:controller`, `make:model`)
+> and the `Titan\Core\Facades\Route` facade referenced in the examples below are
+> not implemented yet — the `routes/` files are aspirational examples.
+> Create controllers and models as plain PHP classes extending
+> `App\Controllers\Controller` and `App\Models\Model` for now.
 
 ## Quick Start
 
@@ -139,22 +141,23 @@ class Post extends Model
 app/
 ├── Controllers/    # Application controllers
 ├── Models/         # Data models
-├── Middleware/     # HTTP middleware
-├── Providers/      # Service providers
-├── Services/       # Business logic services
 bootstrap/          # Application bootstrapping files
 config/             # Configuration files
-database/
-├── migrations/     # Database migrations
-├── seeds/          # Database seeders
-├── factories/      # Model factories
-public/             # Publicly accessible files
+docs/               # Framework documentation
+public/             # Publicly accessible files (web root)
 resources/
 ├── views/          # View templates
-├── assets/         # Uncompiled assets
 routes/             # Route definitions
-storage/            # Application generated files
-tests/              # Automated tests
+src/                # Framework core
+├── Config/         # Configuration repository
+├── Container/      # Dependency injection container
+├── Core/           # Application bootstrap and helpers
+├── Database/       # PDO-based database connection
+├── Http/           # Request and Response
+├── Middleware/     # Middleware contracts
+├── Routing/        # Router and Route
+├── Validation/     # Validator
+├── View/           # View rendering
 ```
 
 ## Configuration
@@ -165,8 +168,6 @@ Titan uses environment-based configuration. The main configuration files are sto
 
 - `app.php`: Application configuration
 - `database.php`: Database configuration
-- `cache.php`: Cache configuration
-- `logging.php`: Logging configuration
 
 ## Security
 
